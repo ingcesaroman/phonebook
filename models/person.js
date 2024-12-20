@@ -20,7 +20,7 @@ mongoose.connect(url)
       });
       
 
-    personFormSchema.set('toJSON', {
+    personSchema.set('toJSON', {
         transform: (document, returnedObject) => {
             returnedObject.id = returnedObject._id.toString()
             delete returnedObject._id
@@ -28,4 +28,4 @@ mongoose.connect(url)
         }
     })
 
-    module.exports = mongoose.model('PersonForm',personFormSchema)
+    module.exports = mongoose.model('Person',personSchema)

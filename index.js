@@ -4,7 +4,7 @@ require('dotenv').config();
 const morgan = require('morgan');
 const cors = require('cors')
 const mongoose = require('mongoose')
-const PersonForm = require('./models/person')
+const Person = require('./models/person')
 
 app.use(cors())
 app.use(express.json());
@@ -25,7 +25,7 @@ app.get('/', (request, response) => {
 });
 
 app.get('/api/persons', (request, response) => {
-  PersonForm.find({}).then(person => {
+  Person.find({}).then(person => {
     response.json(person)
   })
 });
@@ -71,7 +71,7 @@ app.post('/api/persons', (request, response) => {
     return response.status(400).json({ error: 'content missing' });
   }
 
-  const person = new PersonForm({
+  const person = new Person({
     name: body.name,
     number: body.number,
   });
