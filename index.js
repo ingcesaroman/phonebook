@@ -1,24 +1,22 @@
 const express = require('express');
 const app = express();
 require('dotenv').config();
-const morgan = require('morgan');
-const cors = require('cors')
-const mongoose = require('mongoose')
+
 const Person = require('./models/person')
+
+const cors = require('cors')
 
 app.use(cors())
 app.use(express.json());
 app.use(express.static('dist'))
 
+const morgan = require('morgan');
 //app.use(morgan('tiny'));
 morgan.token('body', (req) => {
   return JSON.stringify(req.body); 
 });
 
 app.use(morgan(':method :url :status :response-time ms :body'));
-
-let persons = [
-];
 
 app.get('/', (request, response) => {
   response.send('Phonebook!')
@@ -40,28 +38,24 @@ app.get('/info', (request, response) => {
   `);
 });
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find(p => p.id === id);
-
-  if (person) {
+app.get('/api/persons/:id', (request, response,next) => {
+  Person.findById(request.params.id)
+  .then(person => {
+      if (person) {
     response.json(person);
   } else {
-    response.status(404).json({ error: 'Person not found' });
+    response.status(404).end();
   }
+  })
+  .catch(error => next(error))
 });
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const initialLength = persons.length;
-
-  persons = persons.filter(person => person.id !== id);
-
-  if (persons.length < initialLength) {
-    response.status(204).end(); 
-  } else {
-    response.status(404).json({ error: 'Person not found' });
-  }
+app.delete('/api/persons/:id', (request, response,next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 });
 
 app.post('/api/persons', (request, response) => {
