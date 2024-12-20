@@ -67,23 +67,18 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  if (!body.name || !body.number) {
-    return response.status(400).json({ error: 'content missing' });
+  if (body.content === undefined) {
+    return response.status(400).json({ error: 'content missing' })
   }
 
   const person = new PersonForm({
-    name: body.name,
+    name: body.name || "",
     number: body.number,
-  });
-
-  person.save()
-  .then(result => {
-    response.json(result);
   })
-  .catch(error => {
-    console.error(error);
-    response.status(500).json({ error: 'An error occurred while saving the person' });
-  });
+
+  person.save().then(result => {
+    response.json(result)
+  })
 });
 
 const PORT = process.env.PORT;
